@@ -23,11 +23,11 @@ object Application extends IOApp {
   // for the sake of simplicity - probably will be fetched from the authorization server
   private val jwtPublicKey =
     """-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCCjk/HJbdaoZqIq8ZIien3wxqP
-4jwJRXTMu6s95FYZm2ADr6ROE5gPIxX0RmTFN1lyvAEtZbQgKG63TJiPHgYQu8RD
-31ERe4X0pXpDoTEiinyVy7j2aL8s+2aFe0c/X3Ny4Hnk+y1S5qlKPgrLV5bbylLZ
-/Ml3+ofZ+HgIntpKcQIDAQAB
------END PUBLIC KEY-----"""
+    |MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCCjk/HJbdaoZqIq8ZIien3wxqP
+    |4jwJRXTMu6s95FYZm2ADr6ROE5gPIxX0RmTFN1lyvAEtZbQgKG63TJiPHgYQu8RD
+    |31ERe4X0pXpDoTEiinyVy7j2aL8s+2aFe0c/X3Ny4Hnk+y1S5qlKPgrLV5bbylLZ
+    |/Ml3+ofZ+HgIntpKcQIDAQAB
+    |-----END PUBLIC KEY-----""".stripMargin
 
   private val users = List(
     User("user1", Permissions(Set(Permission.Product))),
