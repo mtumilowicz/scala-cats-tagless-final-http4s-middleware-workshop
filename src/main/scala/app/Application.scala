@@ -2,8 +2,10 @@ package app
 
 import app.authorization.AuthorizationService
 import app.gateway.HttpApi
-import app.product.ProductService
-import app.user.UserService
+import app.infrastructure.product.ProductModule
+import app.infrastructure.user.UserModule
+import app.product.Product
+import app.user.{Permission, Permissions, User}
 import cats.effect._
 import com.comcast.ip4s.Port
 import org.http4s.ember.server.EmberServerBuilder
@@ -17,10 +19,20 @@ object Application extends IOApp {
   private def showEmberBanner[F[_] : Logger](s: Server): F[Unit] =
     Logger[F].info(s"\n${Banner.mkString("\n")}\nHTTP Server started at ${s.address}")
 
+  private val users = List(
+    User("user1", Permissions(Set(Permission.Product))),
+    User("user2", Permissions(Set(Permission.None)))
+  )
+
+  private val products = List(
+    Product("1", "product 1")
+  )
+
   override def run(args: List[String]): IO[ExitCode] = for {
     logger <- Slf4jLogger.create[IO]
-    authorizationService = AuthorizationService(UserService.inMemory[IO]())
-    productService = ProductService.inMemory[IO]()
+    userService = UserModule.inMemoryService[IO](users)
+    authorizationService = AuthorizationService(userService)
+    productService = ProductModule.inMemoryService[IO](products)
     api = HttpApi[IO](authorizationService, productService).httpApp
     server <- EmberServerBuilder.default[IO]
       .withPort(Port.fromInt(9090).get)

@@ -3,12 +3,12 @@ package app.gateway.product
 import app.product.ProductService
 import app.user.User
 import cats.Monad
+import cats.implicits._
+import io.circe.generic.auto._
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.{AuthMiddleware, Router}
 import org.http4s.{AuthedRoutes, HttpRoutes}
-import cats.implicits._
-import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
-import io.circe.generic.auto._
 
 final case class ProductController[F[_] : Monad](productService: ProductService[F]) extends Http4sDsl[F] {
 
