@@ -1,16 +1,16 @@
 package app.domain.authorization
 
 import app.domain.user.{User, UserService}
-import cats.effect.Sync
+import cats.effect._
 import dev.profunktor.auth.JwtPublicKey
-import dev.profunktor.auth.jwt.{JwtAsymmetricAuth, JwtToken}
+import dev.profunktor.auth.jwt.JwtAsymmetricAuth
 import io.circe.generic.auto._
 import io.circe.parser.decode
 import pdi.jwt.{JwtAlgorithm, JwtClaim}
 
 import scala.util.Try
 
-case class AuthorizationService[F[_] : Sync](userService: UserService[F]) {
+case class AuthorizationService[F[_] : Async](userService: UserService[F]) {
 
   // for the sake of simplicity - probably will be fetched from the authorization server
   private val jwtPublicKey =
@@ -28,11 +28,11 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCCjk/HJbdaoZqIq8ZIien3wxqP
       JwtAsymmetricAuth(rsa.get)
     )
 
-  def authorize(token: JwtToken, claim: JwtClaim): F[Option[User]] = {
+  def authorize(claim: JwtClaim): F[Option[User]] = {
     val claimContent = decode[ClaimContent](claim.content).left.map(_.getMessage)
     val userMaybe = claimContent.map(_.user_name).map(userService.getByUserName)
     userMaybe match {
-      case Left(_) => Sync[F].pure(None)
+      case Left(_) => Async[F].pure(None)
       case Right(user) => user
     }
   }

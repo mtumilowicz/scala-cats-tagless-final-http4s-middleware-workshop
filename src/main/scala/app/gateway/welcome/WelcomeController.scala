@@ -11,7 +11,7 @@ final case class WelcomeController[F[_] : Monad]() extends Http4sDsl[F] {
 
   private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root =>
-      Ok(Hello("hi"))
+      Ok(HelloApiOutput("hi"))
   }
 
   val routes: HttpRoutes[F] = Router(
