@@ -1,8 +1,4 @@
-name := "scala-http4s-middleware-workshop"
-
-version := "0.1"
-
-scalaVersion := "2.13.8"
+import sbt.Keys.{scalaVersion, testFrameworks}
 
 val http4s = "0.23.1"
 val http4sJwtAuth = "1.0.0"
@@ -13,7 +9,10 @@ def circe(artifact: String): ModuleID = "io.circe" %% s"circe-$artifact" % circe
 
 lazy val root = (project in file("."))
   .settings(
-    name := "minimal",
+    name := "scala-http4s-middleware-workshop",
+    version := "0.1",
+    scalaVersion := "2.13.8",
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     libraryDependencies ++= Seq(
       compilerPlugin(
         "org.typelevel" %% "kind-projector" % "0.13.2"
@@ -31,7 +30,9 @@ lazy val root = (project in file("."))
       circe("core"),
       circe("generic"),
       circe("parser"),
-      circe("refined")
+      circe("refined"),
+      "com.disneystreaming" %% "weaver-cats" % "0.7.6" % Test,
+      "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test
     ),
     scalacOptions ++= Seq(
       "-Ymacro-annotations", "-Wconf:cat=unused:info"
