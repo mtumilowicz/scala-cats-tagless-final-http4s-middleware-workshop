@@ -1,4 +1,4 @@
-package app.user
+package app.domain.user
 
 sealed trait Permission
 

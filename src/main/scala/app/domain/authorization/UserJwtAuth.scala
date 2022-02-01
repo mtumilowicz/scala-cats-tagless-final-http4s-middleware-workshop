@@ -1,4 +1,4 @@
-package app.authorization
+package app.domain.authorization
 
 import dev.profunktor.auth.jwt.JwtAsymmetricAuth
 

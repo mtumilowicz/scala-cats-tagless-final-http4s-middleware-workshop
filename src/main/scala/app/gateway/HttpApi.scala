@@ -1,10 +1,10 @@
 package app.gateway
 
-import app.authorization.AuthorizationService
+import app.domain.authorization.AuthorizationService
+import app.domain.product.ProductService
+import app.domain.user.User
 import app.gateway.product.ProductController
 import app.gateway.welcome.WelcomeController
-import app.product.ProductService
-import app.user.User
 import cats.effect.Async
 import cats.implicits._
 import dev.profunktor.auth.JwtAuthMiddleware

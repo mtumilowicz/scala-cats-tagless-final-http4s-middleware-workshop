@@ -1,11 +1,11 @@
 package app
 
-import app.authorization.AuthorizationService
+import app.domain.authorization.AuthorizationService
+import app.domain.product.Product
+import app.domain.user.{Permission, Permissions, User}
 import app.gateway.HttpApi
 import app.infrastructure.product.ProductModule
 import app.infrastructure.user.UserModule
-import app.product.Product
-import app.user.{Permission, Permissions, User}
 import cats.effect._
 import com.comcast.ip4s.Port
 import org.http4s.ember.server.EmberServerBuilder

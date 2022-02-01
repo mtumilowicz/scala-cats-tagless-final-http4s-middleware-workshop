@@ -1,6 +1,6 @@
-package app.authorization
+package app.domain.authorization
 
-import app.user.{User, UserService}
+import app.domain.user.{User, UserService}
 import cats.effect.Sync
 import dev.profunktor.auth.JwtPublicKey
 import dev.profunktor.auth.jwt.{JwtAsymmetricAuth, JwtToken}

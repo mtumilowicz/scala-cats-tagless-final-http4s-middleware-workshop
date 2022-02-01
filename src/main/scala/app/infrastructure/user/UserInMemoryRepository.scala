@@ -1,6 +1,6 @@
 package app.infrastructure.user
 
-import app.user.{User, UserRepository}
+import app.domain.user.{User, UserRepository}
 import cats.Applicative
 import cats.effect.Ref
 import cats.implicits._

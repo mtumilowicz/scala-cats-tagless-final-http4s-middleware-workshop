@@ -1,7 +1,7 @@
 package app.gateway.product
 
-import app.product.ProductService
-import app.user.User
+import app.domain.product._
+import app.domain.user.User
 import cats.Monad
 import cats.implicits._
 import io.circe.generic.auto._

@@ -1,6 +1,6 @@
 package app.infrastructure.user
 
-import app.user.{User, UserRepository, UserService}
+import app.domain.user.{User, UserRepository, UserService}
 import cats.effect.Ref
 import cats.effect.kernel.Sync
 

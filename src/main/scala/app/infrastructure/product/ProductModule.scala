@@ -1,16 +1,17 @@
 package app.infrastructure.product
 
-import app.product.{Product, ProductRepository, ProductService}
+import app.domain.product
+import app.domain.product.{ProductRepository, ProductService}
 import cats.effect.{Ref, Sync}
 
 object ProductModule {
 
-  def inMemoryRepository[F[_] : Sync](init: Map[String, Product]): ProductRepository[F] =
+  def inMemoryRepository[F[_] : Sync](init: Map[String, product.Product]): ProductRepository[F] =
     ProductInMemoryRepository[F](Ref.unsafe(init))
 
-  def inMemoryService[F[_] : Sync](products: List[Product]): ProductService[F] = {
+  def inMemoryService[F[_] : Sync](products: List[product.Product]): ProductService[F] = {
     val asMap = products.map(product => (product.id, product)).toMap
-    ProductService(inMemoryRepository[F](asMap))
+    product.ProductService(inMemoryRepository[F](asMap))
   }
 
 }
