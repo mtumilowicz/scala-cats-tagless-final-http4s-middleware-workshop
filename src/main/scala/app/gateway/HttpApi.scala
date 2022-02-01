@@ -16,8 +16,8 @@ import org.http4s.{HttpApp, HttpRoutes}
 import scala.concurrent.duration.DurationInt
 
 case class HttpApi[F[_] : Async](
-                                  val authorizationService: AuthorizationService[F],
-                                  val productService: ProductService[F]
+                                  authorizationService: AuthorizationService[F],
+                                  productService: ProductService[F]
                                 ) {
   private val authorizationMiddleware: AuthMiddleware[F, User] = {
     JwtAuthMiddleware[F, User](authorizationService.userJwtAuth.value, token => claim => authorizationService.authorize(token, claim))
