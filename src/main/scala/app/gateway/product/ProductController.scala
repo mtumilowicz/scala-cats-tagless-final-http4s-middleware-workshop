@@ -16,9 +16,9 @@ final case class ProductController[F[_] : Monad](
                                                 ) extends Http4sDsl[F] {
 
   private val httpRoutes: AuthedRoutes[User, F] = AuthedRoutes.of {
-    case GET -> Root as user =>
+    case GET -> Root / id as user =>
       if (user.hasProductPermission)
-        productService.getById("1").flatMap(_.fold(NotFound("product not found"))(product => Ok(ProductApiOutput.fromDomain(product))))
+        productService.getById(id).flatMap(_.fold(NotFound("product not found"))(product => Ok(ProductApiOutput.fromDomain(product))))
       else Forbidden(ErrorApiOutput("insufficient permissions"))
   }
 
