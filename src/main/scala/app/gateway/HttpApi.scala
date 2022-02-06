@@ -30,7 +30,7 @@ case class HttpApi[F[_] : Async](
 //        .withAnyMethod(false)
 //        .withAnyOrigin(false)
 //        .withAllowedMethods(Some(Set(org.http4s.Method.GET)))
-//        .withAllowedOrigins(Set("https://yahoo.com", "https://duckduckgo.com"))
+//        .withAllowedOrigins(Set("https://www.google.com"))
       CORS(http, allowedOrigins)
     } andThen { http: HttpRoutes[F] =>
       Timeout(60.seconds)(http)
