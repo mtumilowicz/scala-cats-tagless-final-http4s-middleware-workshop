@@ -89,3 +89,11 @@
         * a.map(-_) // interpreter.map(a)(-_)
     * and suppose we need some errors also
         * interpreter : MonadError; then "message".raiseError[F, Int]
+
+
+
+## CORS
+* from google
+    * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))\
+* from bing
+    * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
