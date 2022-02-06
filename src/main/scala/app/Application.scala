@@ -4,7 +4,7 @@ import app.domain.authorization.{AuthorizationService, JwtPublicKeyService}
 import app.domain.product.Product
 import app.domain.user.{Permission, Permissions, User}
 import app.gateway.HttpApi
-import app.infrastructure.authorization.PublicKeyInMemoryRepository
+import app.infrastructure.authorization.{AuthorizationModule, PublicKeyInMemoryRepository}
 import app.infrastructure.product.ProductModule
 import app.infrastructure.user.UserModule
 import cats.effect._
@@ -46,7 +46,7 @@ object Application extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = for {
     logger <- Slf4jLogger.create[IO]
     authorizationService <- prepareAuthorizationService()
-    authMiddleware = AuthMiddleware[IO, User](authorizationService)
+    authMiddleware = AuthorizationModule.middleware(authorizationService)
     productService = ProductModule.inMemoryService[IO](products)
     api = HttpApi[IO](authMiddleware, productService).httpApp
     server <- EmberServerBuilder.default[IO]

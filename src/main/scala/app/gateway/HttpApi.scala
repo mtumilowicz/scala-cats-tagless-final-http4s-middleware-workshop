@@ -26,7 +26,12 @@ case class HttpApi[F[_] : Async](
     { http: HttpRoutes[F] =>
       AutoSlash(http)
     } andThen { http: HttpRoutes[F] =>
-      CORS(http)
+      val allowedOrigins = CORSConfig.default
+//        .withAnyMethod(false)
+//        .withAnyOrigin(false)
+//        .withAllowedMethods(Some(Set(org.http4s.Method.GET)))
+//        .withAllowedOrigins(Set("https://yahoo.com", "https://duckduckgo.com"))
+      CORS(http, allowedOrigins)
     } andThen { http: HttpRoutes[F] =>
       Timeout(60.seconds)(http)
     }
