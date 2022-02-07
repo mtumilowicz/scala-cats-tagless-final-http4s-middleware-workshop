@@ -66,13 +66,6 @@
     * partial type application (type projectors)
     * monad hierarchy: https://cdn.jsdelivr.net/gh/tpolecat/cats-infographic@master/cats.svg
 
-## CORS
-* from google
-    * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))\
-* from bing
-    * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
-
-
 ## middleware
 * A middleware is a wrapper around a service that provides a means of manipulating the Request sent to service, and/or the Response returned by the service
 * In some cases, such as Authentication, middleware may even prevent the service from being called.
@@ -94,7 +87,7 @@
     * X-Request-ID header
     * There is, as well, Out of the Box middleware for Dropwizard and Prometheus metrics
 
-## authentication
+### authentication
 * a service is a Kleisli[OptionT[F, *], Request[F], Response[F]]
 * To add authentication to a service, we need some kind of User object which identifies the user who sent the request.
 * We represent that with AuthedRequest[F, User], which allows you to reference such object, and is the equivalent to (User, Request[F])
@@ -102,3 +95,9 @@
 * AuthedRoutes[User, F], an alias for AuthedRequest[F, User] => OptionT[F, Response[F]]
 * Notice the similarity to a “normal” service, which would be the equivalent to Request[F] => OptionT[F, Response[F]] - in other words, we are lifting the Request into an AuthedRequest, and adding authentication information in the mix.
 *
+
+### CORS
+* from google
+    * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))\
+* from bing
+    * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
