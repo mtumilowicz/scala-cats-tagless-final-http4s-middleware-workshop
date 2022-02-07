@@ -7,91 +7,64 @@
 * https://emmettna.medium.com/scala-inmemory-repository-with-cats-ref-1c2d3ff39beb
 * https://blog.rockthejvm.com/tagless-final/
 * [Tagless Final in Scala](https://www.youtube.com/watch?v=m3Qh-MmWpbM)
-* [The Death of Tagless Final by John A. De Goes](https://www.youtube.com/watch?v=p98W4bUtbO8&t=486s)
+* [The Death of Tagless Final by John A. De Goes](https://www.youtube.com/watch?v=p98W4bUtbO)
 * [Tagless Final - Part 3 - If only we had a crystal ball!](https://www.youtube.com/watch?v=3Jmy3AyYZjc)
 * [Tagless Final - Part 4.1 - Power to the Interpreters!](https://www.youtube.com/watch?v=5NxrVZvur_o)
 * https://http4s.org/v0.23/middleware/
+* https://www.signifytechnology.com/blog/2019/02/an-introduction-to-tagless-final-in-scala-by-basement-crowd
 
 * to run the service with real authorization
     1. run https://github.com/mtumilowicz/kotlin-spring-oauth2-authorization-server
     1. run ApplicationMockedAuthorization
 
 ## tagless final
-* tag
+* technically speaking, the tagless final pattern is an implementation of the Interpreter pattern
+* pattern is made up of two aspects:
+    1. A Domain Specific Language (DSL)
+        * Our DSL could be written in a couple of different ways, one is where the DSL is modelled using Algebraic Data Types (ADT) and an alternative is a DSL modelled using abstract method definitions in a trait
+        * The ADT representation of the DSL is used when working with Free monads, tagless final on the other hand represents the DSL as a parameterised trait with abstract method definitions.
+        * F can be thought of as our effect type, for example a Future, IO, Task etc. that will be defined by the interpreter.
+        ```
+        trait IndexDsl[F[_]] {
+          def createIndex(name: String): F[Either[String, CreateIndexResponse]]
+          def deleteIndex(name: String): F[Either[String, DeleteIndexResponse]]
+        }
+        ```
+    1. An interpreter
+        ```
+        def recreateIndex[F[_]: Monad](name: String)(implicit interpreter: IndexDsl[F]) = {
+          val newIndex = for {
+            _ <- EitherT(interpreter.deleteIndex(name))
+            created <- EitherT(interpreter.createIndex(name))
+          } yield created
+          newIndex.value
+        }
+        ```
+        * [F[_]: Monad] – this context bound ensures that there is an implicit Monad[F] in scope, meaning we can safely deal with our generic F type as a monad and use the powerful tools available, such as for-comprehension (as in this case). The Monad typeclass is provided by the Cats library.
+        * implicit interpreter: IndexDsl[F] – at invocation, we also make sure that there is an implicit IndexDsl[F] in scope, this gives us a compile time guarantee that we will have an interpreter to hand that can deal with any type F that we try to invoke the method for.
+* tagless final makes testable functional effects
     ```
-    trait Expr(val tag: String)
-    case class B(boolean: Boolean) extends Expr("bool")
-    case class Or(left: Expr, right: Expr) extends Expr("bool")
-    case class And(left: Expr, right: Expr) extends Expr("bool")
-    case class Not(expr: Expr) extends Expr("bool")
-    case class I(int: Int) extends Expr("int")
-    case class Sum(left: Expr, right: Expr) extends Expr("int")
-
-    def eval(expr: Expr): Any = expr match {
-      case B(b) => b
-      case Or(left, right) =>
-        if (left.tag == "bool" && right.tag == "bool")
-            eval(left).asInstanceOf[Boolean] || eval(right).asInstanceOf[Boolean]
-        else
-            throw new IllegalArgumentException("attempting to evaluate an expression with improperly typed operands")
-      // same for others
-    }
-    ```
-* tagless initial
-    ```
-    trait Expr[A]
-    case class B(boolean: Boolean) extends Expr[Boolean]
-    case class Or(left: Expr[Boolean], right: Expr[Boolean]) extends Expr[Boolean]
-    case class And(left: Expr[Boolean], right: Expr[Boolean]) extends Expr[Boolean]
-    case class Not(expr: Expr[Boolean]) extends Expr[Boolean]
-    case class I(int: Int) extends Expr[Int]
-    case class Sum(left: Expr[Int], right: Expr[Int]) extends Expr[Int]
-
-    def eval[A](expr: Expr[A]): A = expr match {
-      case B(b) => b
-      case I(i) => i
-      case Or(left, right) => eval(left) || eval(right)
-      case Sum(left, right) => eval(left) + eval(right)
-      // etc
-    }
-    ```
-* tagless final
-    ```
-    trait Expr[A] {
-      val value: A // the final value we care about
+    trait Console[F[_]] {
+        def println(String line): F[Unit]
+        val readLine: F[String]
     }
 
-    def b(boolean: Boolean): Expr[Boolean] = new Expr[Boolean] {
-      val value = boolean
+    object Console {
+        def apply[F[_]](implicit F: Console) = F
     }
 
-    def i(int: Int): Expr[Int] = new Expr[Int] {
-      val value = int
-    }
-
-    def or(left: Expr[Boolean], right: Expr[Boolean]) = new Expr[Boolean] {
-      val value = left.value || right.value
-    }
-    ...
-
-    def eval[A](expr: Expr[A]): A = expr.value
+    implicit val TestConsole = new Console[TestIO] { ... }
+    implicit val LiveConsole = new Console[IO] { ... }
     ```
-* tagless final: makes testable functional effects
-* one of the operations sticks out
-    * def multiply(...): A
-    * def divide(...): Option[A]
-* another reason is
-    * suppose we set Option, what if we realize that we need Future (because we are integrating with something)
-* functor hierarchy
-    * https://cdn.jsdelivr.net/gh/tpolecat/cats-infographic@master/cats.svg
-* in tagless final, the implicits
-    * implicit interpreter: Functor[F]
-    * negate(a: F[Int])
-        * a.map(-_) // interpreter.map(a)(-_)
-    * and suppose we need some errors also
-        * interpreter : MonadError; then "message".raiseError[F, Int]
-
-
+* why it's hard?
+    * functional effects
+    * parametric polymorphism
+        * Java supports parametric polymorphism via generics
+    * higher kinded types (and higher kinded parametric polymorphism)
+    * type classes (and how we fake them in scala, because scala does not have first-class support for type classes)
+    * type class instances (implicit val vs implicit def)
+    * partial type application (type projectors)
+    * monad hierarchy: https://cdn.jsdelivr.net/gh/tpolecat/cats-infographic@master/cats.svg
 
 ## CORS
 * from google
