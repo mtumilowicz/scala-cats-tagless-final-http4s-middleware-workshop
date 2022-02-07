@@ -10,6 +10,7 @@
 * [The Death of Tagless Final by John A. De Goes](https://www.youtube.com/watch?v=p98W4bUtbO8&t=486s)
 * [Tagless Final - Part 3 - If only we had a crystal ball!](https://www.youtube.com/watch?v=3Jmy3AyYZjc)
 * [Tagless Final - Part 4.1 - Power to the Interpreters!](https://www.youtube.com/watch?v=5NxrVZvur_o)
+* https://http4s.org/v0.23/middleware/
 
 * to run the service with real authorization
     1. run https://github.com/mtumilowicz/kotlin-spring-oauth2-authorization-server
@@ -97,3 +98,34 @@
     * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))\
 * from bing
     * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
+
+
+## middleware
+* A middleware is a wrapper around a service that provides a means of manipulating the Request sent to service, and/or the Response returned by the service
+* In some cases, such as Authentication, middleware may even prevent the service from being called.
+* example: adds a header to successful responses
+    def myMiddle(service: HttpRoutes[IO], header: Header.ToRaw): HttpRoutes[IO] = Kleisli { (req: Request[IO]) =>
+      service(req).map {
+        case Status.Successful(resp) =>
+          resp.putHeaders(header)
+        case resp =>
+          resp
+      }
+    }
+* Because middleware returns a Service, you can compose services wrapped in middleware with other, unwrapped, services, or services wrapped in other middleware.
+* Http4s includes some middleware Out of the Box in the org.http4s.server.middleware package
+    * Authentication
+    * Cross Origin Resource Sharing (CORS)
+    * Response Compression (GZip)
+    * Service Timeout
+    * X-Request-ID header
+    * There is, as well, Out of the Box middleware for Dropwizard and Prometheus metrics
+
+## authentication
+* a service is a Kleisli[OptionT[F, *], Request[F], Response[F]]
+* To add authentication to a service, we need some kind of User object which identifies the user who sent the request.
+* We represent that with AuthedRequest[F, User], which allows you to reference such object, and is the equivalent to (User, Request[F])
+    * you have to provide your own user, or authInfo representation
+* AuthedRoutes[User, F], an alias for AuthedRequest[F, User] => OptionT[F, Response[F]]
+* Notice the similarity to a “normal” service, which would be the equivalent to Request[F] => OptionT[F, Response[F]] - in other words, we are lifting the Request into an AuthedRequest, and adding authentication information in the mix.
+*
