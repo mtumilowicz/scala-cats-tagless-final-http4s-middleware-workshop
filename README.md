@@ -20,6 +20,8 @@
     * [Jakub Kozłowski- A Server is Just a Function An Introduction to http4s- λC 2019](https://www.youtube.com/watch?v=jwKzluH5jFg)
     * [Same-origin policy: The core of web security @ OWASP Wellington](https://www.youtube.com/watch?v=zul8TtVS-64)
     * [Cross Origin Resource Sharing (Explained by Example)](https://www.youtube.com/watch?v=Ka8vG5miErk)
+    * https://leanpub.com/pfp-scala
+    * https://github.com/gvolpe/pfps-shopping-cart
 
 ## preface
 * goals of this workshop
