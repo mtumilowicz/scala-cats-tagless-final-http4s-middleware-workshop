@@ -1,4 +1,4 @@
-# scala-http4s-middleware-workshop
+# scala-cats-tagless-final-http4s-middleware-workshop
 * references
     * https://cryptotools.net/rsagen
     * https://circe.github.io/circe/codecs/auto-derivation.html

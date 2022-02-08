@@ -9,7 +9,7 @@ def circe(artifact: String): ModuleID = "io.circe" %% s"circe-$artifact" % circe
 
 lazy val root = (project in file("."))
   .settings(
-    name := "scala-http4s-middleware-workshop",
+    name := "scala-cats-tagless-final-http4s-middleware-workshop",
     version := "0.1",
     scalaVersion := "2.13.8",
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
