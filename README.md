@@ -122,47 +122,22 @@
         * middleware just provide that context and we are back to "normal" types
 * CORS
     * cross origin resource sharing
-    * relaxes the security of webservice
+        * what is origin
+            * origin = (schema, domain, port)
+                * f.e. schema is https
+            * same origin = the same schema, domain and port
+            * there is header: Origin
     * for example
-      * https://swapi.dev/
-        * as you on the same origin, you can call the API (by clicking request)
-          * there is no CORS headers
-        * and if you create a server and fetch get request
-          * access-control-allow-origin: *
-          * it means swapi allows anyone to access its api
-          * because our browser sees it, it allows us to see the data
-            * if it wasn't there - we could not load the data
-      * access-control-allow-origin: http://127.0.0.1:5500
-        * to localhost
-      * works only in a browser
-      * what is origin
-        * origin = (scheme, domain, port); scheme is https f.e.
-        * same origin = the same cheme domain and port
-      * browser will stop facebook accessing you banking data if you have it open in
-      tabs simultaneously
-    * if you access website from the CURL - you could do whatever you want - CORS policy
-    does not apply
-    * each tab / window is isolated
-      * winn = window.open(url, 'right') opens new tab
-      * if it is same origin, you could modify its content
-      * if not = you cant
-    * there is reference to a window that opened current windows
-      * window.opener.document.body // blocked - different origin
-      * window.opener.location.replace(otherUrl)
-        * left tab changes to google
-    * browser local / session storage
-      * origin checks apply
-      * shared between windows with same origin
-      * survives when window is closed
-    * cookies
-      * origin checks apply
-      * but you could redirect to the SiteA and use its cookies (CSRF)
-    * the request is going, but the browser stops the response
-    * cors weakens SOP and allow other sites to read data
-    * there is header: Origin
-    * example
-      * allow for yahoo, don't allow for google
-      * go to yahoo, open console in dev tools and code
-        * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
-        * should be OK
-      * go to google, and do the same - blocked
+        * https://swapi.dev/
+            * as you on the same origin, you can call the API (by clicking request)
+                * there is no CORS headers
+            * and if you create a server and fetch the get request
+                * header appears: `access-control-allow-origin: *`
+                * it means swapi allows anyone to access its api
+                * because our browser sees it, it allows us to see the data
+                    * the request is going, but the browser stops the response
+    * relaxes the security of webservice
+        * cors weakens SOP (Same Origin Policy) and allow other sites to read data
+    * works only in a browser
+        * browser will stop facebook accessing you banking data if you have it open in
+        tabs simultaneously
