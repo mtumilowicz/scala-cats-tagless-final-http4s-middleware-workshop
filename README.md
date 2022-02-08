@@ -18,13 +18,31 @@
     * [Same-origin policy: The core of web security @ OWASP Wellington](https://www.youtube.com/watch?v=zul8TtVS-64)
     * [Cross Origin Resource Sharing (Explained by Example)](https://www.youtube.com/watch?v=Ka8vG5miErk)
 
-* to run the service with real authorization
-    1. run https://github.com/mtumilowicz/kotlin-spring-oauth2-authorization-server
-    1. run ApplicationMockedAuthorization
-    * from google
-        * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
-    * from bing
-        * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
+## preface
+* goals of this workshop
+    * introduction to tagless final
+    * introduction to http4s middleware
+        * authorization
+        * CORS
+    * introduction to oauth2 authorization
+* workshop plan
+    * oauth2
+        * run the oauth2 authorization service: https://github.com/mtumilowicz/kotlin-spring-oauth2-authorization-server
+        * run `Application`
+        * verify open route: `localhost:8080/`
+        * verify secured route: `localhost:8080/products/1`
+            * remember to configure Insomnia accordingly to authorization server config
+                * config for client (resource server): `AuthorizationServerConfig`
+                * config for user: `WebSecurityConfig`
+    * CORS
+        * go to `HttpApi` and modify CORS config
+        * run `ApplicationMockedAuthorization`
+        * run from dev-tools console on www.google.com
+            * `fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))`
+        * run the same from bing
+            * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))
+        * compare responses, statuses and headers
+    * develop next secured resource, for example: Order
 
 ## tagless final
 * technically speaking, the tagless final pattern is an implementation of the Interpreter pattern
