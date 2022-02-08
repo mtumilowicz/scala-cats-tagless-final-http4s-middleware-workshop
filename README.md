@@ -21,15 +21,19 @@
 * technically speaking, the tagless final pattern is an implementation of the Interpreter pattern
 * pattern is made up of two aspects:
     1. A Domain Specific Language (DSL)
-        * Our DSL could be written in a couple of different ways, one is where the DSL is modelled using Algebraic Data Types (ADT) and an alternative is a DSL modelled using abstract method definitions in a trait
-        * The ADT representation of the DSL is used when working with Free monads, tagless final on the other hand represents the DSL as a parameterised trait with abstract method definitions.
-        * F can be thought of as our effect type, for example a Future, IO, Task etc. that will be defined by the interpreter.
-        ```
-        trait IndexDsl[F[_]] {
-          def createIndex(name: String): F[Either[String, CreateIndexResponse]]
-          def deleteIndex(name: String): F[Either[String, DeleteIndexResponse]]
-        }
-        ```
+        * Our DSL could be written in a couple of different ways
+            * DSL modelled using Algebraic Data Types (ADT)
+                * used when working with Free monads
+            * DSL modelled using abstract method definitions in a trait
+                * used when working with tagless final
+        * example
+            ```
+            trait IndexDsl[F[_]] {
+              def createIndex(name: String): F[Either[String, CreateIndexResponse]]
+              def deleteIndex(name: String): F[Either[String, DeleteIndexResponse]]
+            }
+            ```
+            * F can be thought of as our effect type, for example a Future, IO, Task etc. that will be defined by the interpreter.
     1. An interpreter
         ```
         def recreateIndex[F[_]: Monad](name: String)(implicit interpreter: IndexDsl[F]) = {
@@ -40,9 +44,13 @@
           newIndex.value
         }
         ```
-        * [F[_]: Monad] – this context bound ensures that there is an implicit Monad[F] in scope, meaning we can safely deal with our generic F type as a monad and use the powerful tools available, such as for-comprehension (as in this case). The Monad typeclass is provided by the Cats library.
-        * implicit interpreter: IndexDsl[F] – at invocation, we also make sure that there is an implicit IndexDsl[F] in scope, this gives us a compile time guarantee that we will have an interpreter to hand that can deal with any type F that we try to invoke the method for.
-* tagless final makes testable functional effects
+        * [F[_]: Monad] – this context bound ensures that
+            * there is an implicit Monad[F] in scope
+            * we can safely deal with our generic F type as a monad and use for-comprehension
+            * The Monad typeclass is provided by the Cats library
+        * implicit interpreter: IndexDsl[F]
+            * gives us a compile time guarantee that we will have an interpreter to hand that can deal with any type F
+* makes testable functional effects
     ```
     trait Console[F[_]] {
         def println(String line): F[Unit]
@@ -66,6 +74,7 @@
     * partial type application (type projectors)
     * monad hierarchy: https://cdn.jsdelivr.net/gh/tpolecat/cats-infographic@master/cats.svg
 
+## http4s
 ## middleware
 * A middleware is a wrapper around a service that provides a means of manipulating the Request sent to service, and/or the Response returned by the service
 * In some cases, such as Authentication, middleware may even prevent the service from being called.
@@ -86,17 +95,14 @@
     * Service Timeout
     * X-Request-ID header
     * There is, as well, Out of the Box middleware for Dropwizard and Prometheus metrics
-
-### authentication
-* a service is a Kleisli[OptionT[F, *], Request[F], Response[F]]
-* To add authentication to a service, we need some kind of User object which identifies the user who sent the request.
-* We represent that with AuthedRequest[F, User], which allows you to reference such object, and is the equivalent to (User, Request[F])
-    * you have to provide your own user, or authInfo representation
-* AuthedRoutes[User, F], an alias for AuthedRequest[F, User] => OptionT[F, Response[F]]
-* Notice the similarity to a “normal” service, which would be the equivalent to Request[F] => OptionT[F, Response[F]] - in other words, we are lifting the Request into an AuthedRequest, and adding authentication information in the mix.
-*
-
-### CORS
+* authentication
+    * a service is a Kleisli[OptionT[F, *], Request[F], Response[F]]
+    * To add authentication to a service, we need some kind of User object which identifies the user who sent the request.
+    * We represent that with AuthedRequest[F, User], which allows you to reference such object, and is the equivalent to (User, Request[F])
+        * you have to provide your own user, or authInfo representation
+    * AuthedRoutes[User, F], an alias for AuthedRequest[F, User] => OptionT[F, Response[F]]
+    * Notice the similarity to a “normal” service, which would be the equivalent to Request[F] => OptionT[F, Response[F]] - in other words, we are lifting the Request into an AuthedRequest, and adding authentication information in the mix.
+* CORS
 * from google
     * fetch('http://localhost:9090/products/1').then(response => response.json()).then(data => console.log(data))\
 * from bing
